@@ -156,12 +156,12 @@ function driveImageURL(raw) {
     if(u.hostname==="drive.google.com" || u.hostname==="docs.google.com"){
       const pathMatch=u.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || u.pathname.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
       id=(pathMatch&&pathMatch[1]) || u.searchParams.get("id") || "";
-      if(id) return "https://drive.google.com/uc?export=view&id="+encodeURIComponent(id);
+      if(id) return "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1000";
     }
   } catch(e) {
     // If a bare Drive file ID is pasted, handle it below.
   }
-  if(/^[a-zA-Z0-9_-]{20,}$/.test(value)) return "https://drive.google.com/uc?export=view&id="+encodeURIComponent(value);
+  if(/^[a-zA-Z0-9_-]{20,}$/.test(value)) return "https://drive.google.com/thumbnail?id="+encodeURIComponent(value)+"&sz=w1000";
   return value;
 }
 function formatPrice(raw) {
