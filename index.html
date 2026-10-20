@@ -247,8 +247,8 @@ function openProduct(id) {
   $("productModal").classList.remove("hidden");document.body.style.overflow="hidden";$("modalClose").focus();
 }
 function closeModal() {$("productModal").classList.add("hidden");document.body.style.overflow="";currentModalProduct=null;}
-function setLoadMessage(message, error=false) {
-  $("loadStatus").innerHTML=error?`<span aria-hidden="true">ⓘ</span><span>${escapeHTML(message)}</span>`:`<span class="spinner"></span><span>${escapeHTML(message)}</span>`;
+function setLoadMessage(message, error=false, loading=false) {
+  $("loadStatus").innerHTML=error?`<span aria-hidden="true">ⓘ</span><span>${escapeHTML(message)}</span>`:loading?`<span class="spinner" aria-hidden="true"></span><span>${escapeHTML(message)}</span>`:`<span aria-hidden="true">✓</span><span>${escapeHTML(message)}</span>`;
 }
 function saveCache(list) {try{localStorage.setItem(CACHE_KEY,JSON.stringify(list));localStorage.setItem(CACHE_TIME_KEY,String(Date.now()));}catch(e){}}
 function loadCache() {try{const s=localStorage.getItem(CACHE_KEY);return s?JSON.parse(s):[];}catch(e){return[];}}
@@ -256,7 +256,7 @@ function setProducts(list, source) {
   products=list;
   renderFilters();renderProducts();renderFeatured();
   if(source==="live"){setLoadMessage(`Showing ${list.length} product${list.length===1?"":"s"} from your Google Sheet.`);saveCache(list);}
-  else if(source==="cache"){setLoadMessage(`Showing ${list.length} saved product${list.length===1?"":"s"}. Reconnecting to Google Sheets…`,true);}
+  else if(source==="cache"){setLoadMessage(`Showing ${list.length} saved product${list.length===1?"":"s"}. Reconnecting to Google Sheets…`,false,true);}
   else setLoadMessage("The product sheet couldn't be reached. Showing saved products if available; please check the published CSV link and internet connection.",true);
 }
 async function fetchProducts() {
@@ -305,7 +305,7 @@ $("year").textContent=new Date().getFullYear();
 configureContactLinks();setupSlider();
 // Show cached products immediately, then refresh on first load/reopen and periodically while the page stays open.
 const cached=loadCache();
-if(cached.length){products=cached;renderFilters();renderProducts();renderFeatured();setLoadMessage("Showing saved products while we check for updates…");}
+if(cached.length){products=cached;renderFilters();renderProducts();renderFeatured();setLoadMessage("Showing saved products while we check for updates…",false,true);}
 fetchProducts();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){const last=Number(localStorage.getItem(CACHE_TIME_KEY)||0);if(Date.now()-last>REFRESH_INTERVAL_MS)fetchProducts();}});
 refreshTimer=setInterval(()=>{if(!document.hidden)fetchProducts();},REFRESH_INTERVAL_MS);
